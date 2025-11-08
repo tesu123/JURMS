@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for Firefox */
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none; /* for IE and Edge */
+}
+
+/* Also hide scrollbar on html */
+html::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
