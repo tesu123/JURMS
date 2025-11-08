@@ -1,11 +1,15 @@
 // src/pages/CreateRoutine.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 import {
   CalendarPlus,
   Trash2,
   CheckCircle2,
   AlertTriangle,
 } from "lucide-react";
+
+const ApiUrl = import.meta.env.VITE_BACKEND_URL; // e.g., https://jurms-backend.vercel.app/api/v1
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const timeSlots = [
@@ -31,18 +35,58 @@ const CreateRoutine = () => {
     day: "",
   });
   const [conflict, setConflict] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Mock Data — replace with backend data later
-  const courses = ["B.Tech", "MCA", "BCA", "M.Tech"];
-  const subjects = ["Data Structures", "DBMS", "OS", "Computer Networks"];
-  const faculties = ["Prof. A. Das", "Dr. R. Sen", "Prof. S. Ghosh"];
-  const rooms = ["CSE-201", "CSE-202", "Lab-1", "Lab-2"];
+  // Dynamic Data
+  const [courses, setCourses] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [faculties, setFaculties] = useState([]);
+  const [rooms, setRooms] = useState([]);
 
-  // ✅ Handle Adding Routine Slot
-  const handleAddClass = () => {
+  // ✅ Fetch all lists on mount
+  useEffect(() => {
+    fetchAllData();
+    fetchRoutines();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      const [courseRes, deptRes, facRes, roomRes] = await Promise.all([
+        axios.get(`${ApiUrl}/courses/get-courses`, { withCredentials: true }),
+        axios.get(`${ApiUrl}/departments/get-departments`, {
+          withCredentials: true,
+        }),
+        axios.get(`${ApiUrl}/faculties/get-faculties`, {
+          withCredentials: true,
+        }),
+        axios.get(`${ApiUrl}/rooms/get-rooms`, { withCredentials: true }),
+      ]);
+      setCourses(courseRes.data.data || []);
+      setDepartments(deptRes.data.data || []);
+      setFaculties(facRes.data.data || []);
+      setRooms(roomRes.data.data || []);
+    } catch (err) {
+      console.error("Error fetching master data:", err);
+      toast.error("Failed to load data from server");
+    }
+  };
+
+  const fetchRoutines = async () => {
+    try {
+      const res = await axios.get(`${ApiUrl}/routines/get-routines`, {
+        withCredentials: true,
+      });
+      setRoutine(res.data.data || []);
+    } catch (err) {
+      console.error("Error fetching routines:", err);
+      toast.error("Failed to load routines");
+    }
+  };
+
+  // ✅ Handle Add Routine
+  const handleAddClass = async () => {
     setConflict("");
 
-    // Validation — all fields must be filled
     if (
       !formData.course ||
       !formData.department ||
@@ -57,38 +101,53 @@ const CreateRoutine = () => {
       return;
     }
 
-    // Check for conflicts
-    const hasConflict = routine.some(
-      (item) =>
-        item.day === formData.day &&
-        item.time === formData.time &&
-        (item.faculty === formData.faculty || item.room === formData.room)
-    );
+    try {
+      setLoading(true);
+      const res = await axios.post(`${ApiUrl}/routines/add-routine`, formData, {
+        withCredentials: true,
+      });
 
-    if (hasConflict) {
-      setConflict(
-        "⚠️ Conflict detected! Same faculty or room already assigned in this slot."
-      );
-      return;
+      if (res.data.success) {
+        toast.success("Routine added successfully");
+        setRoutine((prev) => [...prev, res.data.data]);
+        setFormData({
+          course: "",
+          department: "",
+          semester: "",
+          subject: "",
+          faculty: "",
+          room: "",
+          time: "",
+          day: "",
+        });
+      }
+    } catch (err) {
+      console.error("Error adding routine:", err);
+      const msg =
+        err.response?.data?.message ||
+        "⚠️ Failed to add routine. Please try again.";
+      setConflict(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
-
-    // Add new routine entry
-    setRoutine((prev) => [...prev, { ...formData }]);
-    setFormData({
-      course: "",
-      department: "",
-      semester: "",
-      subject: "",
-      faculty: "",
-      room: "",
-      time: "",
-      day: "",
-    });
   };
 
-  // 🧹 Remove specific class
-  const handleRemove = (index) => {
-    setRoutine((prev) => prev.filter((_, i) => i !== index));
+  // 🧹 Delete a routine
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this routine?"))
+      return;
+
+    try {
+      await axios.delete(`${ApiUrl}/routines/delete-routine/${id}`, {
+        withCredentials: true,
+      });
+      toast.success("Routine deleted successfully");
+      setRoutine((prev) => prev.filter((r) => r._id !== id));
+    } catch (err) {
+      console.error("Error deleting routine:", err);
+      toast.error("Failed to delete routine");
+    }
   };
 
   return (
@@ -102,9 +161,8 @@ const CreateRoutine = () => {
       </div>
 
       {/* Routine Builder Form */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-lg shadow-sm mb-6">
-        
-        {/* ✅ Course */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 p-4 rounded-lg shadow-sm mb-6">
+        {/* Course */}
         <div>
           <label className="block text-sm font-medium mb-1">Course</label>
           <select
@@ -112,12 +170,12 @@ const CreateRoutine = () => {
             onChange={(e) =>
               setFormData({ ...formData, course: e.target.value })
             }
-            className="w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
           >
             <option value="">Select Course</option>
             {courses.map((c) => (
-              <option key={c} value={c}>
-                {c}
+              <option key={c._id} value={c._id}>
+                {c.name}
               </option>
             ))}
           </select>
@@ -131,12 +189,14 @@ const CreateRoutine = () => {
             onChange={(e) =>
               setFormData({ ...formData, department: e.target.value })
             }
-            className="w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
           >
             <option value="">Select Department</option>
-            <option value="CSE">CSE</option>
-            <option value="ECE">ECE</option>
-            <option value="ME">ME</option>
+            {departments.map((d) => (
+              <option key={d._id} value={d._id}>
+                {d.code} — {d.name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -148,7 +208,7 @@ const CreateRoutine = () => {
             onChange={(e) =>
               setFormData({ ...formData, semester: e.target.value })
             }
-            className="w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
           >
             <option value="">Select Semester</option>
             {[1, 2, 3, 4, 5, 6].map((sem) => (
@@ -162,20 +222,15 @@ const CreateRoutine = () => {
         {/* Subject */}
         <div>
           <label className="block text-sm font-medium mb-1">Subject</label>
-          <select
+          <input
+            type="text"
+            placeholder="Enter subject"
             value={formData.subject}
             onChange={(e) =>
               setFormData({ ...formData, subject: e.target.value })
             }
-            className="w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
-          >
-            <option value="">Select Subject</option>
-            {subjects.map((sub) => (
-              <option key={sub} value={sub}>
-                {sub}
-              </option>
-            ))}
-          </select>
+            className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
         </div>
 
         {/* Faculty */}
@@ -186,12 +241,12 @@ const CreateRoutine = () => {
             onChange={(e) =>
               setFormData({ ...formData, faculty: e.target.value })
             }
-            className="w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
           >
             <option value="">Select Faculty</option>
             {faculties.map((f) => (
-              <option key={f} value={f}>
-                {f}
+              <option key={f._id} value={f._id}>
+                {f.name}
               </option>
             ))}
           </select>
@@ -203,12 +258,12 @@ const CreateRoutine = () => {
           <select
             value={formData.room}
             onChange={(e) => setFormData({ ...formData, room: e.target.value })}
-            className="w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
           >
             <option value="">Select Room</option>
             {rooms.map((r) => (
-              <option key={r} value={r}>
-                {r}
+              <option key={r._id} value={r._id}>
+                {r.name}
               </option>
             ))}
           </select>
@@ -220,7 +275,7 @@ const CreateRoutine = () => {
           <select
             value={formData.day}
             onChange={(e) => setFormData({ ...formData, day: e.target.value })}
-            className="w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
           >
             <option value="">Select Day</option>
             {days.map((d) => (
@@ -237,7 +292,7 @@ const CreateRoutine = () => {
           <select
             value={formData.time}
             onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-            className="w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
           >
             <option value="">Select Time Slot</option>
             {timeSlots.map((slot) => (
@@ -252,9 +307,10 @@ const CreateRoutine = () => {
         <div className="flex items-end">
           <button
             onClick={handleAddClass}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md font-semibold transition"
+            disabled={loading}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md font-semibold transition disabled:opacity-50"
           >
-            Add to Routine
+            {loading ? "Adding..." : "Add to Routine"}
           </button>
         </div>
       </div>
@@ -266,7 +322,7 @@ const CreateRoutine = () => {
         </div>
       )}
 
-      {/* Weekly Routine Grid */}
+      {/* Weekly Routine Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
           <thead className="bg-indigo-600 text-white">
@@ -284,22 +340,24 @@ const CreateRoutine = () => {
           </thead>
           <tbody>
             {routine.length > 0 ? (
-              routine.map((item, index) => (
+              routine.map((item) => (
                 <tr
-                  key={index}
-                  className="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-800 dark:even:bg-gray-700 hover:bg-indigo-50 dark:hover:bg-gray-600 transition"
+                  key={item._id}
+                  className="odd:bg-gray-50 even:bg-gray-100 dark:odd:bg-gray-800 dark:even:bg-gray-900 hover:bg-indigo-50 dark:hover:bg-gray-700 transition"
                 >
-                  <td className="px-4 py-2">{item.course}</td>
-                  <td className="px-4 py-2">{item.department}</td>
+                  <td className="px-4 py-2">{item.course?.name || "N/A"}</td>
+                  <td className="px-4 py-2">
+                    {item.department?.code || "N/A"}
+                  </td>
                   <td className="px-4 py-2">{item.semester}</td>
-                  <td className="px-4 py-2 font-medium">{item.day}</td>
+                  <td className="px-4 py-2">{item.day}</td>
                   <td className="px-4 py-2">{item.time}</td>
                   <td className="px-4 py-2">{item.subject}</td>
-                  <td className="px-4 py-2">{item.faculty}</td>
-                  <td className="px-4 py-2">{item.room}</td>
+                  <td className="px-4 py-2">{item.faculty?.name || "N/A"}</td>
+                  <td className="px-4 py-2">{item.room?.name || "N/A"}</td>
                   <td className="px-4 py-2">
                     <button
-                      onClick={() => handleRemove(index)}
+                      onClick={() => handleDelete(item._id)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <Trash2 size={18} />
@@ -311,7 +369,7 @@ const CreateRoutine = () => {
               <tr>
                 <td
                   colSpan="9"
-                  className="text-center py-4 text-gray-500 dark:text-gray-400"
+                  className="text-center py-4 text-gray-600 dark:text-gray-400"
                 >
                   No classes added yet.
                 </td>
@@ -324,7 +382,10 @@ const CreateRoutine = () => {
       {/* Save Routine Button */}
       {routine.length > 0 && (
         <div className="flex justify-end mt-6">
-          <button className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-semibold transition">
+          <button
+            onClick={() => toast.success("Routine saved successfully!")}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-semibold transition"
+          >
             <CheckCircle2 size={18} /> Save Routine
           </button>
         </div>

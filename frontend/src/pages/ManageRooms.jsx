@@ -335,7 +335,7 @@ const ManageRooms = () => {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-3 py-2 rounded-md bg-transparent border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
             />
           </div>
 
@@ -349,7 +349,7 @@ const ManageRooms = () => {
               onChange={(e) =>
                 setFormData({ ...formData, capacity: e.target.value })
               }
-              className="w-full px-3 py-2 rounded-md bg-transparent border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
             />
           </div>
 
@@ -361,7 +361,7 @@ const ManageRooms = () => {
               onChange={(e) =>
                 setFormData({ ...formData, type: e.target.value })
               }
-              className="w-full px-3 py-2 rounded-md bg-transparent border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
             >
               <option value="">Select Type</option>
               <option value="Classroom">Classroom</option>
@@ -378,7 +378,7 @@ const ManageRooms = () => {
               onChange={(e) =>
                 setFormData({ ...formData, department: e.target.value })
               }
-              className="w-full px-3 py-2 rounded-md bg-transparent border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
             >
               <option value="">Select Department</option>
               {departments.map((dept) => (

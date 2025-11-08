@@ -11,6 +11,6 @@ const router = Router();
 // Base URL: /api/v1/routines
 router.route("/add-routine").post(addRoutine);
 router.route("/get-routines").get(getRoutines);
-router.route("/delete/:id").delete(deleteRoutine);
+router.route("/delete-routine/:id").delete(deleteRoutine);
 
 export default router;

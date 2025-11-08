@@ -113,7 +113,7 @@ const ManageDepartments = () => {
               onChange={(e) =>
                 setFormData({ ...formData, code: e.target.value.toUpperCase() })
               }
-              className="w-full px-3 py-2 rounded-md bg-transparent border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
             />
           </div>
 
@@ -129,7 +129,7 @@ const ManageDepartments = () => {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-3 py-2 rounded-md bg-transparent border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
             />
           </div>
 
@@ -145,7 +145,7 @@ const ManageDepartments = () => {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="w-full px-3 py-2 rounded-md bg-transparent border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
             />
           </div>
         </div>
