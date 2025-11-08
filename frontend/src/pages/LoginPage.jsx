@@ -32,8 +32,8 @@ function LoginPage() {
     setLoading(true);
     axios
       .post(
-        // `${ApiUrl}/users/login`,
-        `/api/v1/users/login`,
+        `${ApiUrl}/users/login`,
+        // `/api/v1/users/login`,
         { email: email, password: password },
         { withCredentials: true }
       )

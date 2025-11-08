@@ -46,8 +46,8 @@ function SignupPage() {
 
     axios
       .post(
-        // `${ApiUrl}/users/register`,
-        `/api/v1/users/register`,
+        `${ApiUrl}/users/register`,
+        // `/api/v1/users/register`,
         {
           name: name,
           email: email,
