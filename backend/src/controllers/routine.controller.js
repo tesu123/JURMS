@@ -7,16 +7,12 @@ import { Room } from "../models/room.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-/**
- * @desc Add new Routine (auto-resolves ObjectIds for all references)
- * @route POST /api/v1/routines/add
- */
 export const addRoutine = async (req, res) => {
   try {
     const { course, department, semester, subject, faculty, room, day, time } =
       req.body;
 
-    // 🧩 Validate required fields
+    // Validate required fields
     if (
       !course ||
       !department ||
@@ -30,7 +26,7 @@ export const addRoutine = async (req, res) => {
       throw new ApiError(400, "All fields are required");
     }
 
-    // 🧠 Resolve all references (works for name/code/ObjectId)
+    // Resolve all references (works for name/code/ObjectId)
     const resolveReference = async (Model, value, key = "name") => {
       if (mongoose.isValidObjectId(value)) return await Model.findById(value);
       if (key === "code")
@@ -54,7 +50,7 @@ export const addRoutine = async (req, res) => {
       );
     }
 
-    // 🧩 Check for conflicts
+    // Check for conflicts
     const existingConflict = await Routine.findOne({
       day,
       time,
@@ -68,7 +64,7 @@ export const addRoutine = async (req, res) => {
       );
     }
 
-    // ✅ Create new routine
+    // Create new routine
     const routine = await Routine.create({
       course: courseDoc._id,
       department: departmentDoc._id,
@@ -98,10 +94,6 @@ export const addRoutine = async (req, res) => {
   }
 };
 
-/**
- * @desc Get all Routines
- * @route GET /api/v1/routines
- */
 export const getRoutines = async (req, res) => {
   try {
     const routines = await Routine.find()
@@ -131,10 +123,6 @@ export const getRoutines = async (req, res) => {
   }
 };
 
-/**
- * @desc Delete Routine
- * @route DELETE /api/v1/routines/:id
- */
 export const deleteRoutine = async (req, res) => {
   try {
     const { id } = req.params;

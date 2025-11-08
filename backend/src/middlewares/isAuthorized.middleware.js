@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Course } from "../models/course.model.js";
 import { CourseEnrollment } from "../models/courseEnrollment.model.js";
+
 export const isEnrolledInCourse = async (req, res, next) => {
   try {
     const userId = req.user?._id;

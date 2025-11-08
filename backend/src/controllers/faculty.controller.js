@@ -4,20 +4,16 @@ import { Department } from "../models/department.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-/**
- * @desc Add new Faculty (supports both department code and ObjectId)
- * @route POST /api/v1/faculties/add
- */
 export const addFaculty = async (req, res) => {
   try {
     const { name, email, designation, contact, department } = req.body;
 
-    // 🧩 Validation
+    // Validation
     if (!name || !email || !designation || !contact || !department) {
       throw new ApiError(400, "All fields are required");
     }
 
-    // 🧩 Check duplicate email (case-insensitive)
+    // Check duplicate email (case-insensitive)
     const exists = await Faculty.findOne({
       email: { $regex: new RegExp(`^${email}$`, "i") },
     });
@@ -25,7 +21,7 @@ export const addFaculty = async (req, res) => {
       throw new ApiError(400, "Faculty with this email already exists");
     }
 
-    // 🧩 Validate & resolve department
+    // Validate & resolve department
     let dept;
     if (mongoose.isValidObjectId(department)) {
       // If frontend sends ObjectId
@@ -39,7 +35,7 @@ export const addFaculty = async (req, res) => {
       throw new ApiError(400, "Invalid department code or ID");
     }
 
-    // ✅ Create faculty record
+    // Create faculty record
     const faculty = await Faculty.create({
       name,
       email: email.toLowerCase(),
@@ -62,10 +58,6 @@ export const addFaculty = async (req, res) => {
   }
 };
 
-/**
- * @desc Get all Faculties
- * @route GET /api/v1/faculties
- */
 export const getFaculties = async (req, res) => {
   try {
     const faculties = await Faculty.find()
@@ -92,10 +84,6 @@ export const getFaculties = async (req, res) => {
   }
 };
 
-/**
- * @desc Delete Faculty
- * @route DELETE /api/v1/faculties/:id
- */
 export const deleteFaculty = async (req, res) => {
   try {
     const { id } = req.params;

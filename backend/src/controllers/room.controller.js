@@ -4,20 +4,16 @@ import { Department } from "../models/department.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-/**
- * @desc Add a new Room (supports both department code and ObjectId)
- * @route POST /api/v1/rooms/add
- */
 export const addRoom = async (req, res) => {
   try {
     const { name, capacity, type, department } = req.body;
 
-    // 🧩 Validate all required fields
+    // Validate all required fields
     if (!name || !capacity || !type || !department) {
       throw new ApiError(400, "All fields are required");
     }
 
-    // 🧩 Check for existing room by name (case-insensitive)
+    // Check for existing room by name (case-insensitive)
     const exists = await Room.findOne({
       name: { $regex: new RegExp(`^${name}$`, "i") },
     });
@@ -25,7 +21,7 @@ export const addRoom = async (req, res) => {
       throw new ApiError(400, "Room already exists");
     }
 
-    // 🧩 Resolve department (supports both code and ObjectId)
+    // Resolve department (supports both code and ObjectId)
     let dept;
     if (mongoose.isValidObjectId(department)) {
       dept = await Department.findById(department);
@@ -37,7 +33,7 @@ export const addRoom = async (req, res) => {
       throw new ApiError(400, "Invalid department code or ID");
     }
 
-    // ✅ Create new room
+    // Create new room
     const room = await Room.create({
       name,
       capacity: Number(capacity),
@@ -59,10 +55,6 @@ export const addRoom = async (req, res) => {
   }
 };
 
-/**
- * @desc Get all Rooms
- * @route GET /api/v1/rooms
- */
 export const getRooms = async (req, res) => {
   try {
     const rooms = await Room.find()
@@ -87,10 +79,6 @@ export const getRooms = async (req, res) => {
   }
 };
 
-/**
- * @desc Delete a Room by ID
- * @route DELETE /api/v1/rooms/:id
- */
 export const deleteRoom = async (req, res) => {
   try {
     const { id } = req.params;

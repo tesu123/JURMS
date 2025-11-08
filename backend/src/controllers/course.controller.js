@@ -4,10 +4,6 @@ import { Department } from "../models/department.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-/**
- * @desc Create a new Course
- * @route POST /api/v1/courses/add
- */
 export const createCourse = async (req, res) => {
   try {
     const { name, department } = req.body;
@@ -24,7 +20,7 @@ export const createCourse = async (req, res) => {
       throw new ApiError(400, "Course already exists");
     }
 
-    // 🧩 Validate and resolve department (either ObjectId or code)
+    // Validate and resolve department (either ObjectId or code)
     let dept;
     if (mongoose.isValidObjectId(department)) {
       dept = await Department.findById(department);
@@ -36,7 +32,7 @@ export const createCourse = async (req, res) => {
       throw new ApiError(400, "Invalid department code or ID");
     }
 
-    // ✅ Create course
+    // Create course
     const course = await Course.create({
       name,
       department: dept._id,
@@ -78,10 +74,6 @@ export const getCourses = async (req, res) => {
   }
 };
 
-/**
- * @desc Delete a Course by ID
- * @route DELETE /api/v1/courses/:id
- */
 export const deleteCourse = async (req, res) => {
   try {
     const { id } = req.params;
