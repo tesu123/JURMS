@@ -12,6 +12,8 @@ import {
   logoutUser,
   getCurrentUser,
   updateAccountsDetails,
+  getAllUsers,
+  deleteUser,
 } from "../controllers/user.controller.js";
 
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -37,5 +39,11 @@ router
   .post(verifyJWT, authorizeRoles("admin"), updateAccountsDetails);
 
 router.route("/current-user").get(verifyJWT, getCurrentUser);
+
+router.route("/get-users").get(verifyJWT, authorizeRoles("admin"), getAllUsers);
+
+router
+  .route("/users/:userId")
+  .delete(verifyJWT, authorizeRoles("admin"), deleteUser);
 
 export default router;

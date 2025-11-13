@@ -333,6 +333,38 @@ const updateAccountsDetails = async (req, res) => {
     .json(new ApiResponse(200, user, "Account details updated successfully"));
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, users, "Users fetched successfully"));
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "User deleted successfully"));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export {
   registerUser,
   verifyOTP,
@@ -345,4 +377,6 @@ export {
   logoutUser,
   getCurrentUser,
   updateAccountsDetails,
+  getAllUsers,
+  deleteUser,
 };
