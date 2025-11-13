@@ -136,7 +136,7 @@ const ManageFaculties = () => {
             <label className="block text-sm font-medium mb-1">Full Name</label>
             <input
               type="text"
-              placeholder="e.g., Prof. A. Das"
+              placeholder="e.g., Prof. John Doe"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
@@ -150,7 +150,7 @@ const ManageFaculties = () => {
             <label className="block text-sm font-medium mb-1">Email</label>
             <input
               type="email"
-              placeholder="e.g., adas@jurms.edu"
+              placeholder="e.g., johndoe@jurms.edu"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })

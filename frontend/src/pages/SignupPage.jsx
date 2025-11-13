@@ -107,7 +107,7 @@ function SignupPage() {
               </label>
               <input
                 type="text"
-                placeholder="e.g. Abhijit Rabidas"
+                placeholder="e.g. John Doe"
                 className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-gray-700 
                          border border-gray-300/70 dark:border-gray-600 
                          focus:ring-2 focus:ring-indigo-500 dark:focus:ring-purple-500 
