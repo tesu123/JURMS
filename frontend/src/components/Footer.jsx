@@ -11,7 +11,7 @@ function Footer() {
         </p>
 
         {/* Social Links */}
-        <div className="flex gap-5 mt-3 md:mt-0">
+        {/* <div className="flex gap-5 mt-3 md:mt-0">
           <a
             href="https://abhijitrabidas.live"
             target="_blank"
@@ -36,7 +36,7 @@ function Footer() {
           >
             <Instagram className="w-5 h-5" />
           </a>
-        </div>
+        </div> */}
       </div>
     </footer>
   );
