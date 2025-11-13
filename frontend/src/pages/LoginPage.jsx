@@ -59,34 +59,37 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      {/* <Toaster position="top-right" /> */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-500 px-4">
+      {/* ---------- LOGIN CARD ---------- */}
       {(!showForgotPassword || resetPasswordSuccess) && (
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md w-80 max-w-md">
-          {/* Title */}
-          <h1 className="text-2xl font-bold text-center mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-purple-600">
+        <div className="w-full max-w-md bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl shadow-xl rounded-2xl p-8 border border-white/20 dark:border-gray-700/40 animate-fadeIn">
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
               JURMS
             </h1>
-          </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+              Welcome back! Log in to continue
+            </p>
+          </div>
 
-          {/* Form */}
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Login Form */}
+          <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Email
+                Email Address
               </label>
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                placeholder="example@university.edu"
+                className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-gray-700 border border-gray-300/70 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-purple-500 focus:outline-none text-gray-900 dark:text-white transition"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+
+            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Password
@@ -94,64 +97,70 @@ function LoginPage() {
               <div className="relative">
                 {showPassword ? (
                   <EyeOff
-                    className="w-5 absolute top-3 right-3 text-black dark:text-white cursor-pointer"
+                    className="w-5 absolute top-3 right-3 text-gray-600 dark:text-gray-300 cursor-pointer"
                     onClick={toggleShowPassword}
                   />
                 ) : (
                   <Eye
-                    className="w-5 absolute top-3 right-3 text-black dark:text-white cursor-pointer"
+                    className="w-5 absolute top-3 right-3 text-gray-600 dark:text-gray-300 cursor-pointer"
                     onClick={toggleShowPassword}
                   />
                 )}
-
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="w-full pl-4 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  placeholder="••••••••"
+                  className="w-full px-4 py-2.5 pr-10 rounded-lg bg-white dark:bg-gray-700 border border-gray-300/70 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-purple-500 focus:outline-none text-gray-900 dark:text-white transition"
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
             </div>
-            <div className="w-full flex items-end justify-end text-black dark:text-white">
+
+            {/* Forgot Password */}
+            <div className="text-right">
               <span
-                className="cursor-pointer hover:text-purple-500"
-                onClick={() => {
-                  setShowForgotPassword(true);
-                }}
+                className="text-sm cursor-pointer text-indigo-600 dark:text-indigo-400 hover:underline"
+                onClick={() => setShowForgotPassword(true)}
               >
                 Forgot Password?
               </span>
             </div>
 
-            {error ? <p className="text-red-500">{error}</p> : ""}
+            {/* Error Message */}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-md transition cursor-pointer"
               disabled={loading}
+              className="w-full py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-60"
             >
               {loading ? "Logging in..." : "Log In"}
             </button>
           </form>
 
           {/* Signup Link */}
-          <p className="mt-4 text-center text-gray-600 dark:text-gray-300 text-sm">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-purple-600 hover:underline">
+          <p className="mt-5 text-center text-gray-600 dark:text-gray-300 text-sm">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="font-semibold text-purple-600 hover:underline"
+            >
               Sign Up
             </Link>
           </p>
         </div>
       )}
+
+      {/* ---------- FORGOT PASSWORD FLOW ---------- */}
       {showForgotPassword && !success && (
         <ForgotPassword
           setSuccess={setSuccess}
           setResetPasswordEmail={setResetPasswordEmail}
         />
       )}
+
+      {/* ---------- OTP INPUT ---------- */}
       {success && !showResetPassword && (
         <OTPInput
           email={resetPasswordEmail}
@@ -162,6 +171,8 @@ function LoginPage() {
           toast={toast}
         />
       )}
+
+      {/* ---------- RESET PASSWORD ---------- */}
       {showResetPassword && !resetPasswordSuccess && (
         <ResetPassword
           email={resetPasswordEmail}

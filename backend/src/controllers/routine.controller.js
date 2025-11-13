@@ -26,7 +26,7 @@ export const addRoutine = async (req, res) => {
       throw new ApiError(400, "All fields are required");
     }
 
-    // Resolve all references (works for name/code/ObjectId)
+    // Utility to resolve references
     const resolveReference = async (Model, value, key = "name") => {
       if (mongoose.isValidObjectId(value)) return await Model.findById(value);
       if (key === "code")
@@ -50,21 +50,62 @@ export const addRoutine = async (req, res) => {
       );
     }
 
-    // Check for conflicts
-    const existingConflict = await Routine.findOne({
+    // -----------------------------------------
+    // 🟥 CHECK FOR ALL POSSIBLE CONFLICTS
+    // -----------------------------------------
+
+    const conflictQuery = {
       day,
       time,
-      $or: [{ faculty: facultyDoc._id }, { room: roomDoc._id }],
-    });
+      $or: [
+        { faculty: facultyDoc._id }, // faculty conflict
+        { room: roomDoc._id }, // room conflict
+        { course: courseDoc._id }, // course conflict (your request)
+        { department: departmentDoc._id }, // department conflict
+      ],
+    };
+
+    const existingConflict = await Routine.findOne(conflictQuery);
 
     if (existingConflict) {
-      throw new ApiError(
-        400,
-        "⚠️ Conflict detected! Same faculty or room already assigned in this slot."
-      );
+      let reason = "";
+
+      if (existingConflict.faculty.equals(facultyDoc._id)) {
+        reason = "Faculty already assigned in this time slot.";
+      } else if (existingConflict.room.equals(roomDoc._id)) {
+        reason = "Room already assigned in this time slot.";
+      } else if (existingConflict.course.equals(courseDoc._id)) {
+        reason = "Same course already has another class at this time.";
+      } else if (existingConflict.department.equals(departmentDoc._id)) {
+        reason = "This department already has another class at the same time.";
+      } else {
+        reason = "Conflict detected!";
+      }
+
+      throw new ApiError(400, `⚠️ Conflict: ${reason}`);
     }
 
-    // Create new routine
+    // -----------------------------------------
+    // 🟦 Prevent exact duplicate routine
+    // -----------------------------------------
+    const duplicateRoutine = await Routine.findOne({
+      course: courseDoc._id,
+      department: departmentDoc._id,
+      semester,
+      subject,
+      faculty: facultyDoc._id,
+      room: roomDoc._id,
+      day,
+      time,
+    });
+
+    if (duplicateRoutine) {
+      throw new ApiError(400, "This exact routine entry already exists.");
+    }
+
+    // -----------------------------------------
+    // 🟩 CREATE ROUTINE
+    // -----------------------------------------
     const routine = await Routine.create({
       course: courseDoc._id,
       department: departmentDoc._id,
