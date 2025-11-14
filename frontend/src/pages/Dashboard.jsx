@@ -228,7 +228,7 @@ const Dashboard = () => {
 
           {/* ---------- STUDENT LIST (ADMIN ONLY) ---------- */}
           {user?.role === "admin" && (
-            <div className="bg-gray-900 p-6 rounded-xl shadow-lg">
+            <div className="dark:bg-gray-900 p-6 rounded-xl shadow-lg">
               <h2 className="text-xl font-semibold mb-4">
                 Registered Students
               </h2>
