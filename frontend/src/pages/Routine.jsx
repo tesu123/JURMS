@@ -704,51 +704,7 @@ const Routine = () => {
               </tr>
             </thead>
 
-            {/* <tbody>
-              {days.map((day) => (
-                <tr
-                  key={day}
-                  className="odd:bg-gray-50 even:bg-gray-100 dark:odd:bg-gray-800 dark:even:bg-gray-900"
-                >
-                  <td className="border font-semibold px-2 py-2">{day}</td>
-
-                  {timeSlots.map((slot, idx) => {
-                    if (slot === "02:00-02:30") {
-                      return (
-                        <td
-                          key={idx}
-                          className="border bg-yellow-100 dark:bg-yellow-800 text-xs font-bold"
-                        >
-                          R E C E S S
-                        </td>
-                      );
-                    }
-
-                    const match = filteredRoutine.find(
-                      (r) =>
-                        r.day === day &&
-                        r.time.toString().startsWith(slot.split("-")[0])
-                    );
-
-                    return (
-                      <td key={idx} className="border px-2 py-2">
-                        {match ? (
-                          <div>
-                            <div className="font-semibold">{match.subject}</div>
-                            <div className="text-xs">{match.faculty?.name}</div>
-                            <div className="text-xs text-gray-500">
-                              {match.room?.name}
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">—</span>
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody> */}
+            
             <tbody>
               {(day === "All" ? days : [day]).map((d) => (
                 <tr

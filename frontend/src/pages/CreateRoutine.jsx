@@ -13,14 +13,14 @@ const ApiUrl = import.meta.env.VITE_BACKEND_URL; // e.g., https://jurms-backend.
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const timeSlots = [
-  "9:00 AM - 10:00 AM",
-  "10:00 AM - 11:00 AM",
-  "11:00 AM - 12:00 PM",
-  "12:00 PM - 1:00 PM",
-  "1:00 PM - 2:00 PM",
-  "2:30 PM - 3:30 PM",
-  "3:30 PM - 4:30 PM",
-  "4:30 PM - 5:30 PM",
+  "10:00-11:00",
+  "11:00-12:00",
+  "12:00-01:00",
+  "01:00-02:00",
+  "02:00-02:30", // recess
+  "02:30-03:30",
+  "03:30-04:30",
+  "04:30-05:30",
 ];
 
 const CreateRoutine = () => {
